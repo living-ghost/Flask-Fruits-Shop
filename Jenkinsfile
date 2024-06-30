@@ -1,8 +1,10 @@
 pipeline {
     agent any
-
+    
     environment {
-        VIRTUALENV = 'venv'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials-id'
+        DOCKER_IMAGE = 'living9host/fruits-app'
+        CONTAINER_NAME = 'fruits-container'
     }
 
     stages {
@@ -12,26 +14,45 @@ pipeline {
             }
         }
 
-        stage('Set Up Python Environment') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Check if virtual environment exists, if not create one
-                    if (!fileExists("${env.WORKSPACE}\\${env.VIRTUALENV}\\Scripts\\activate")) {
-                        bat 'python -m venv venv'
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS_ID) {
+                        try {
+                            dockerImage.push()
+                            echo 'Image pushed successfully'
+                        } catch (Exception e) {
+                            echo "Failed to push image: ${e.getMessage()}"
+                        }
                     }
                 }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Deploy Docker Container') {
             steps {
-                bat 'venv\\Scripts\\activate && pip install -r requirements.txt'
-            }
-        }
+                script {
+                    // Define the container name and image variables
+                    def containerName = "${env.CONTAINER_NAME}"
+                    def imageName = "${DOCKER_IMAGE}:${env.BUILD_ID}"
 
-        stage('Run Flask App') {
-            steps {
-                bat 'venv\\Scripts\\activate && python run.py'
+                    bat """
+                    // Stop and remove any existing container with the same name
+                    docker stop ${containerName} || true
+                    docker rm ${containerName} || true
+
+                    // Run the new container
+                    docker run -d --name ${containerName} -p 80:80 ${imageName}
+                    """
+                }
             }
         }
     }
