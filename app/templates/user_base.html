@@ -63,14 +63,12 @@
                     <div class="navbar-nav mx-auto">
                         <a href="{{ url_for('main.user_index') }}" class="nav-item nav-link">Home</a>
                         <a href="{{ url_for('main.user_shop') }}" class="nav-item nav-link">Shop</a>
-                        <a href="{{ url_for('main.user_shopdetail') }}" class="nav-item nav-link">Shop Detail</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="{{ url_for('main.user_cart') }}" class="dropdown-item">Cart</a>
+                                <a href="{{ url_for('main.user_cart') }}" class="dropdown-item">User Cart</a>
                                 <a href="{{ url_for('main.user_checkout') }}" class="dropdown-item">Checkout</a>
                                 <a href="{{ url_for('main.user_testimonial') }}" class="dropdown-item">Testimonial</a>
-                                <a href="{{ url_for('main.user_fournotfour') }}" class="dropdown-item active">404 Page</a>
                             </div>
                         </div>
                         <a href="{{ url_for('main.user_contact') }}" class="nav-item nav-link">Contact</a>
@@ -89,7 +87,7 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#">Edit Profile</a>
-                                <a class="dropdown-item" href="#">Delete Profile</a>
+                                <a class="dropdown-item" href="#">Delete Profile </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ url_for('main.user_logout') }}">Logout</a>
                             </div>
